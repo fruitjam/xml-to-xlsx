@@ -13,6 +13,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -111,14 +115,23 @@ public class XmlToExcelConverter {
             }
         }
 
+//			Date modified: 08-05-2019
+//        	This does not work in case the 'Temp' folder is not to be found in the location specified.
 
-        FileOutputStream fileOut = new FileOutputStream("C:/Temp/Excel-Out.xlsx");
+        Date date = Calendar.getInstance().getTime();  
+        DateFormat dateFormat = new SimpleDateFormat("dd-mm-yyyy-hh-mm-ss");  
+        String strDate = dateFormat.format(date);  
+        
+        String desktopPath = System.getProperty("user.home") + "\\Desktop\\Excel-out-"+strDate+".xlsx";
+        System.out.print(desktopPath.replace("\\", "\\\\"));
+        
+        FileOutputStream fileOut = new FileOutputStream(desktopPath);
         workbook.write(fileOut);
         workbook.close();
         fileOut.close();
 
         if (xmlFile.exists()) {
-            System.out.println("delete file-> " + xmlFile.getAbsolutePath());
+            System.out.println("\ndelete file-> " + xmlFile.getAbsolutePath());
             if (!xmlFile.delete()) {
                 System.out.println("file '" + xmlFile.getAbsolutePath() + "' was not deleted!");
             }
@@ -138,8 +151,11 @@ public class XmlToExcelConverter {
         Font boldFont = workbook.createFont();
         boldFont.setBold(true);
         style.setFont(boldFont);
-        style.setAlignment(CellStyle.ALIGN_CENTER);
 
+        //Date modified: 08-05-2019
+        //style.setAlignment(CellStyle.ALIGN_CENTER); //This has been superseded by style.setAlignment(HorizontalAlignment.CENTER)
+        style.setAlignment(HorizontalAlignment.CENTER);
+        
         Sheet sheet = workbook.createSheet();
         rowNum = 0;
         Row row = sheet.createRow(rowNum++);
